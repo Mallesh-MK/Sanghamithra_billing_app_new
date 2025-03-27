@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanghamitra Billing System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Base Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header Section */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      height: 100px;
+      width: auto;
+    }
+
+    .about-link {
+      color: #004080;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* Customer Info */
+    .customer-info {
+      display: grid;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    /* Product Table */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #004080;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    /* Action Section */
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+    }
+
+    button {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .primary-btn {
+      background-color: #004080;
+      color: white;
+    }
+
+    .danger-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .discount-group {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    /* Footer Section */
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .thank-you-message {
+      font-weight: bold;
+      text-align: right;
+      font-size: 16px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img src="https://i0.wp.com/sanghamitra.store/wp-content/uploads/2020/04/Bodhi-Tree-2-web.jpg?w=2000&ssl=1" alt="Sanghamithra Logo" class="logo">
+      <div>
+        <p>Email: sanghamithra.incubator@gmail.com</p>
+        <p>Contact Number: 8008328433</p>
+      </div>
+    </header>
+
+    <div class="customer-info">
+      <div class="form-group">
+        <label>Customer Name:</label>
+        <input type="text" id="customerName" placeholder="Enter name">
+      </div>
+      <div class="form-group">
+        <label>Customer Contact:</label>
+        <input type="text" id="customerContact" placeholder="Enter contact number">
+      </div>
+      <div class="form-group">
+        <label>Date:</label>
+        <input type="date" id="date">
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Quoted Price</th>
+            <th>Quantity</th>
+            <th>Discount %</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="productTable">
+          <tr>
+            <td>
+              <select class="description">
+                <option value="Frames">Frames</option>
+                <option value="Cotton Bags">Cotton Bags</option>
+                <option value="Rexine Bags">Rexine Bags</option>
+              </select>
+            </td>
+            <td><input type="number" class="quoted-price"></td>
+            <td><input type="number" class="quantity" onchange="calculateTotal()"></td>
+            <td><input type="number" class="discount" onchange="calculateTotal()"></td>
+            <td><input type="number" class="item-total" readonly></td>
+            <td><button class="danger-btn" onclick="removeRow(this)">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Payment Method Section moved below the table -->
+    <div class="form-group">
+      <label>Payment Method:</label>
+      <select id="paymentMethod">
+        <option value="Online">Online</option>
+        <option value="Cash">Cash</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <div class="discount-group">
+        <label>Bill-wise Discount %:</label>
+        <input type="number" id="billDiscount" onchange="applyBillDiscount()">
+      </div>
+      <div class="buttons">
+        <button class="primary-btn" onclick="addProduct()">Add Product</button>
+        <button class="primary-btn" onclick="submitBill()">Submit Bill</button>
+        <button class="primary-btn" onclick="retrieveData()">Retrieve</button>
+      </div>
+    </div>
+
+    <!-- Footer Section with Thank You Message on right -->
+    <div class="footer">
+      <p class="thank-you-message">Thank you for visiting Sanghamithra Business Incubator. We can't wait to see you again soon!</p>
+    </div>
+  </div>
+
+  <script>
+    function calculateTotal() {
+      document.querySelectorAll('tbody tr').forEach(row => {
+        const price = parseFloat(row.querySelector('.quoted-price').value) || 0;
+        const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+        const discount = parseFloat(row.querySelector('.discount').value) || 0;
+        
+        let total = price * quantity;
+        total -= total * (discount / 100);
+        
+        row.querySelector('.item-total').value = total.toFixed(2);
+      });
+    }
+
+    function removeRow(button) {
+      button.closest('tr').remove();
+      calculateTotal();
+    }
+
+    function addProduct() {
+      const table = document.getElementById('productTable');
+      const newRow = table.rows[0].cloneNode(true);
+      table.appendChild(newRow);
+    }
+
+    function applyBillDiscount() {
+      const billDiscount = parseFloat(document.getElementById('billDiscount').value) || 0;
+      document.querySelectorAll('.item-total').forEach(input => {
+        let total = parseFloat(input.value) || 0;
+        total -= total * (billDiscount / 100);
+        input.value = total.toFixed(2);
+      });
+    }
+
+    function submitBill() {
+      const customerName = document.getElementById('customerName').value;
+      const customerContact = document.getElementById('customerContact').value;
+      const date = document.getElementById('date').value;
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const billDiscount = document.getElementById('billDiscount').value;
+      const productData = [];
+
+      document.querySelectorAll('#productTable tr').forEach(row => {
+        const description = row.querySelector('.description').value;
+        const quotedPrice = row.querySelector('.quoted-price').value;
+        const quantity = row.querySelector('.quantity').value;
+        const discount = row.querySelector('.discount').value;
+        const total = row.querySelector('.item-total').value;
+
+        productData.push({ description, quotedPrice, quantity, discount, total });
+      });
+
+      const billData = {
+        customerName,
+        customerContact,
+        date,
+        paymentMethod,
+        billDiscount,
+        products: productData,
+      };
+
+      // Save data to localStorage
+      localStorage.setItem('billData', JSON.stringify(billData));
+      alert('Bill submitted successfully!');
+    }
+
+    function retrieveData() {
+      const savedBill = localStorage.getItem('billData');
+      if (savedBill) {
+        const billData = JSON.parse(savedBill);
+        
+        // Populate customer details
+        document.getElementById('customerName').value = billData.customerName;
+        document.getElementById('customerContact').value = billData.customerContact;
+        document.getElementById('date').value = billData.date;
+        document.getElementById('paymentMethod').value = billData.paymentMethod;
+        document.getElementById('billDiscount').value = billData.billDiscount;
+
+        // Populate product details
+        const table = document.getElementById('productTable');
+        table.innerHTML = ''; // Clear the existing rows
+        billData.products.forEach(product => {
+          const row = table.insertRow();
+          row.innerHTML = `
+            <td><select class="description"><option value="Frames">Frames</option><option value="Cotton Bags">Cotton Bags</option><option value="Rexine Bags">Rexine Bags</option></select></td>
+            <td><input type="number" class="quoted-price" value="${product.quotedPrice}"></td>
+            <td><input type="number" class="quantity" value="${product.quantity}" onchange="calculateTotal()"></td>
+            <td><input type="number" class="discount" value="${product.discount}" onchange="calculateTotal()"></td>
+            <td><input type="number" class="item-total" value="${product.total}" readonly></td>
+            <td><button class="danger-btn" onclick="removeRow(this)">Remove</button></td>
+          `;
+        });
+      } else {
+        alert('No saved data found!');
+      }
+    }
+  </script>
+</body>
+</html>
+  
